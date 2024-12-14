@@ -14,6 +14,7 @@ const helmet = require('helmet')
 const { rateLimit } = require('express-rate-limit')
 const { xss } = require('express-xss-sanitizer')
 const cors = require('cors')
+const mongoSanitize = require('express-mongo-sanitize')
 
 // require routes
 const authRouter = require('./Routes/authRoutes')
@@ -33,25 +34,16 @@ app.use(limiter)
 app.use(helmet())
 app.use(cors())
 app.use(xss())
+app.use(mongoSanitize())
 
-// app.use(morgan('tiny'))
 app.use(express.json())
 app.use(cookieParser(process.env.Signed_Cookie))
-
-app.get('/', (req, res) => {
-  res.send('Hello there')
-})
-
-app.get('/api/v1', (req, res) => {
-  // console.log(req.signedCookies)
-
-  res.send('The duplicate route')
-})
 
 // Routes
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/tasks', taskRouter)
+
 // Error middlewares
 app.use(notFoundmiddleWare)
 app.use(errorHandlerMiddleware)
